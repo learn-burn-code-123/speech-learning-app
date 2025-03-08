@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speech Learning Friend</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .title {
+            color: #4a90e2;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+        }
+
+        .category-buttons {
+            margin: 20px 0;
+        }
+
+        .category-btn {
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.5em;
+            margin: 10px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .category-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .word-card {
+            background-color: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin: 20px;
+            display: inline-block;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .word-card:hover {
+            transform: scale(1.05);
+        }
+
+        .word-image {
+            width: 200px;
+            height: 200px;
+            object-fit: contain;
+            margin-bottom: 15px;
+        }
+
+        .word-text {
+            font-size: 2em;
+            color: #333;
+            margin: 10px 0;
+        }
+
+        .play-button {
+            background-color: #6ac045;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1.2em;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .play-button:hover {
+            background-color: #5aa035;
+        }
+
+        .success-animation {
+            animation: bounce 0.5s;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">Speech Learning Friend! 🎈</h1>
+        
+        <div class="category-buttons">
+            <button class="category-btn" onclick="loadCategory('animals')">Animals 🐾</button>
+            <button class="category-btn" onclick="loadCategory('food')">Food 🍎</button>
+        </div>
+
+        <div id="words-container"></div>
+    </div>
+
+    <script>
+        let currentAudio = null;
+
+        function loadCategory(category) {
+            fetch(`/get_words?category=${category}`)
+                .then(response => response.json())
+                .then(words => {
+                    const container = document.getElementById('words-container');
+                    container.innerHTML = '';
+                    
+                    words.forEach(word => {
+                        const card = document.createElement('div');
+                        card.className = 'word-card';
+                        card.innerHTML = `
+                            <img src="/static/images/${word.image}" alt="${word.word}" class="word-image">
+                            <div class="word-text">${word.word}</div>
+                            <button class="play-button" onclick="playWord('${word.word}')">
+                                Say it! 🔊
+                            </button>
+                        `;
+                        container.appendChild(card);
+                    });
+                });
+        }
+
+        function playWord(word) {
+            if (currentAudio) {
+                currentAudio.pause();
+            }
+
+            fetch(`/get_audio/${word}`)
+                .then(response => response.blob())
+                .then(blob => {
+                    const audioUrl = URL.createObjectURL(blob);
+                    currentAudio = new Audio(audioUrl);
+                    currentAudio.play();
+                    
+                    // Add success animation to the card
+                    const cards = document.querySelectorAll('.word-card');
+                    cards.forEach(card => {
+                        if (card.querySelector('.word-text').textContent === word) {
+                            card.classList.add('success-animation');
+                            setTimeout(() => card.classList.remove('success-animation'), 500);
+                        }
+                    });
+
+                    // Clean up the object URL after playing
+                    currentAudio.onended = () => {
+                        URL.revokeObjectURL(audioUrl);
+                    };
+                });
+        }
+
+        // Load animals category by default
+        loadCategory('animals');
+    </script>
+</body>
+</html>
