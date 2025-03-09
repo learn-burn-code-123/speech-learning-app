@@ -21,6 +21,10 @@ WORDS = {
         {'word': 'banana', 'image': 'banana.svg'},
         {'word': 'milk', 'image': 'milk.svg'},
     ],
+    'letters': [
+        {'word': letter, 'image': f'letter_{letter.lower()}.svg'}
+        for letter in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    ],
 }
 
 @app.route('/')
