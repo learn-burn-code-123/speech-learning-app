@@ -27,7 +27,7 @@ WORDS = {
     ],
     'numbers': [
         {'word': str(num), 'image': f'number_{num}.svg'}
-        for num in range(11)
+        for num in range(21)
     ],
 }
 
