@@ -3,7 +3,7 @@ from gtts import gTTS
 import os
 import tempfile
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static', static_folder='static')
 
 # Ensure the audio directory exists
 os.makedirs('static/audio', exist_ok=True)
@@ -12,14 +12,14 @@ os.makedirs('static/images', exist_ok=True)
 # Simple word database with categories
 WORDS = {
     'animals': [
-        {'word': 'cat', 'image': 'cat.png'},
-        {'word': 'dog', 'image': 'dog.png'},
-        {'word': 'bird', 'image': 'bird.png'},
+        {'word': 'cat', 'image': 'cat.svg'},
+        {'word': 'dog', 'image': 'dog.svg'},
+        {'word': 'bird', 'image': 'bird.svg'},
     ],
     'food': [
-        {'word': 'apple', 'image': 'apple.png'},
-        {'word': 'banana', 'image': 'banana.png'},
-        {'word': 'milk', 'image': 'milk.png'},
+        {'word': 'apple', 'image': 'apple.svg'},
+        {'word': 'banana', 'image': 'banana.svg'},
+        {'word': 'milk', 'image': 'milk.svg'},
     ],
 }
 
